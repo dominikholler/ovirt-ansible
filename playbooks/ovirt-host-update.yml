@@ -1,0 +1,17 @@
+- hosts: all
+  remote_user: root
+
+  roles:
+    - ovirt-host-update
+
+  tasks:
+    - name: Check if post tasks file exists
+      stat:
+        path: "{{ host_update_post_tasks }}"
+      delegate_to: localhost
+      register: stat_post_tasks
+      when: "host_update_post_tasks is defined"
+
+    - name: Executing post tasks defined by user
+      include: "{{ host_update_post_tasks }}"
+      when: "host_update_post_tasks is defined and stat_post_tasks.stat.exists"
